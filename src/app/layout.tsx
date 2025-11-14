@@ -7,6 +7,8 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
+// Not the RAF website uses Myriad pro in the header but it is not available as a google font so sticking with inter as per the design file.
+
 export const metadata: Metadata = {
   title: "RAF demo",
   description: "RAF demo by Jack Wakeham",

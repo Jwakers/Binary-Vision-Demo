@@ -1,21 +1,52 @@
 @import "tailwindcss";
 
+/* This is the single source of truth for all design system tokens and values in the project */
+
+/* This way of theming and design system may seem verbose, and occasionally repetitive with repeating colour values
+but in my experience it gives incredibly granularity, maintainability and readability. 
+Using CSS variables allows us to update them with scripts and override them
+in a locally scoped manner (this is useful for additional themes outside of dark and light - for example brand themes in a multi tenant style site.)
+I am using HSL values just because they are more human readable than HEX. And only the number values are defined because you cannot use
+CSS function, like hsl(), inside of CSS variables. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: 0 0 100%;
+  --foreground: 0 0 0;
+  --primary: 210.32 100 18.63;
+  --secondary: 348.39 88.57 41.18;
+  --secondary-foreground: 348.39 88.57 92.94;
+  --accent: 348, 96%, 51%;
+  --accent-foreground: 0, 0%, 100%;
+  --muted: 0, 0%, 85%, 0.5;
+  --muted-foreground: 0, 0%, 100%;
+  --map: 0, 0%, 33%;
+  --map-foreground: 0, 0%, 100%;
+};
+
+/* I will leave out any typography design system for now as it seems unnecessary for the demo
+but if this were a 'real' project they would all go in this file too */
+
+/* I will leave dark mode as is but if it were to be 
+set up the colour values would be defined here and the 
+class would be applied to the body element via a toggle or menu UI  */
+.dark {
+  --background: 0 0 0;
+  --foreground: 0 0 100%;
+  --primary: 210.32 100 18.63;
+  --secondary: 348.39 88.57 41.18;
+  --secondary-foreground: 348.39 88.57 92.94;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-primary: hsl(var(--primary));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-map: hsl(var(--map));
+  --color-map-foreground: hsl(var(--map-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
   --font-sans: var(--font-inter);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
