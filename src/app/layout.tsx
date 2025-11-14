@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import Header from "./_components/header";
 import "./globals.css";
 
 const inter = Inter({
@@ -11,7 +12,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "RAF demo",
-  description: "RAF demo by Jack Wakeham",
+  description: "RAF demo site by Jack Wakeham",
 };
 
 export default function RootLayout({
@@ -21,7 +22,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} antialiased`}>{children}</body>
+      <body className={`${inter.variable} antialiased`}>
+        <Header />
+        <main className="bg-map text-map-foreground min-h-dvh">{children}</main>
+      </body>
     </html>
   );
 }
