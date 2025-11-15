@@ -25,7 +25,7 @@ export default function Header() {
 
         <div className="py-4 text-background">
           <nav className="text-sm font-semibold">
-            <ul className="flex items-center gap-21.25">
+            <ul className="flex items-center gap-12.5">
               {NAV_ITEMS.map((item) => (
                 <li key={item.href}>
                   <UnderlinedLink href={item.href}>
