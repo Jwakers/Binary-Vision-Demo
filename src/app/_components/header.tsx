@@ -7,7 +7,7 @@ import Link from "next/link";
 
 export default function Header() {
   return (
-    <header className="w-full border-primary border-t-[5px] absolute top-0 inset-x-0">
+    <header className="w-full border-primary border-t-[5px] absolute top-0 inset-x-0 z-50">
       <div className=" flex gap-2 justify-between items-center mx-auto px-7.5">
         <div className="flex items-start">
           <Link href={ROUTES.HOME}>
