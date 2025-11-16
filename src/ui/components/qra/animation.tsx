@@ -27,6 +27,67 @@ function animateBlurTransition(
   return tl;
 }
 
+export function useAnimatePathTransition(
+  pathRef: React.RefObject<SVGPathElement | null>,
+  containerRef: React.RefObject<HTMLDivElement | null>,
+  PIN_DATA: PinData[]
+) {
+  const tl = useRef<GSAPTimeline>(null);
+
+  useGSAP(() => {
+    const path = pathRef.current;
+    const container = containerRef.current;
+
+    if (!path || !container) return;
+
+    tl.current = gsap.timeline({ paused: true });
+
+    const svg = path.parentElement;
+
+    // Get SVG dimensions
+    const { width, height } = container.getBoundingClientRect();
+
+    // This is arbitrary. In practice it would be a more dynamic pin selection
+    // This is only for demonstration purposes.
+    const [pin1, pin2] = PIN_DATA;
+
+    // Convert percentages to actual coordinates
+    const offset = 6; // Offset to account for the pin size
+    const x1 = (pin1.x / 100) * width + offset;
+    const y1 = (pin1.y / 100) * height + offset;
+    const x2 = (pin2.x / 100) * width + offset;
+    const y2 = (pin2.y / 100) * height + offset;
+
+    // Calculate control point for curve (midpoint with offset)
+    const controlX = (x1 + x2) / 2;
+    const controlY = Math.min(y1, y2) - Math.abs(x2 - x1) * 0.2; // Curve upward
+
+    // Update path
+    path.setAttribute(
+      "d",
+      `M ${x1} ${y1} Q ${controlX} ${controlY} ${x2} ${y2}`
+    );
+
+    const length = path.getTotalLength();
+
+    gsap.set(svg, {
+      opacity: 1,
+    });
+    gsap.set(path, {
+      strokeDasharray: length,
+      strokeDashoffset: length,
+    });
+
+    tl.current.to(path, {
+      strokeDashoffset: 0,
+      duration: 2,
+      ease: "power2.inOut",
+    });
+  }, []);
+
+  return tl;
+}
+
 export function useLoadAnimation({
   containerRef,
   contentRef,

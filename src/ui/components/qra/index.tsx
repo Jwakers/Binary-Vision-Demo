@@ -7,14 +7,17 @@ import Image from "next/image";
 import Link from "next/link";
 import { Fragment, useRef, useState } from "react";
 import signalTowerImage from "../../../../public/signal-tower.png";
-import { useLoadAnimation, useZoomAnimation } from "./animation";
+import {
+  useAnimatePathTransition,
+  useLoadAnimation,
+  useZoomAnimation,
+} from "./animation";
 import { Button } from "./button";
 import { PIN_DATA, PinData } from "./data";
 import UKMap from "./uk-map";
 
 // -- Next steps --
 // Handle co-ordinate response step click
-// - Add a third base close to the lossiemouth base
 // - Draw a line between the two bases
 // - Add a third content section for co-ordinating response and animate in
 // Handle asses situation button click
@@ -31,6 +34,7 @@ export default function QRA() {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const pinContentRef = useRef<HTMLDivElement>(null);
   const progressIndicatorRef = useRef<HTMLDivElement>(null);
+  const pathRef = useRef<SVGPathElement>(null);
   const [activePin, setActivePin] = useState<PinData | null>(null);
   const [activeStep, setActiveStep] = useState<QRAStep | null>(null);
 
@@ -43,6 +47,7 @@ export default function QRA() {
     containerRef,
     progressIndicatorRef,
   });
+  const pathTl = useAnimatePathTransition(pathRef, mapContainerRef, PIN_DATA);
 
   const handlePinClick = (pin: PinData) => {
     setActivePin(pin);
@@ -60,6 +65,7 @@ export default function QRA() {
 
   const handleStepClick = (step: QRAStep) => {
     setActiveStep(step);
+    pathTl.current?.play();
   };
 
   return (
@@ -102,6 +108,24 @@ export default function QRA() {
                 />
               </button>
             ))}
+            <div className="absolute inset-0">
+              {/* This SVG acts as an overlay in which we can programmatically draw lines between pins. */}
+              <svg
+                className={cn(
+                  "text-accent size-full",
+                  "opacity-0" // initial animation class
+                )}
+              >
+                <path
+                  ref={pathRef}
+                  d="M 50 150 Q 200 50, 350 150"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </div>
           </div>
           {/* Right Side content section */}
           <div className="isolate grid grid-cols-1 grid-rows-1 items-center">
@@ -218,7 +242,7 @@ function ProgressIndicator({ activeStep }: { activeStep: QRAStep | null }) {
               <div
                 aria-hidden
                 className={cn(
-                  "bg-accent absolute inset-x-0 bottom-0 h-0.5 origin-left scale-x-0 transition-transform duration-700",
+                  "bg-accent absolute inset-x-0 bottom-0 h-0.5 origin-left scale-x-0 transition-transform duration-700 ease-in-out",
                   activeStep === step && "scale-x-100"
                 )}
               />
