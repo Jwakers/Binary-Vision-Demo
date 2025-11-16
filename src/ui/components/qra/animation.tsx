@@ -6,7 +6,7 @@ import { PinData } from "./data";
 
 gsap.registerPlugin(useGSAP);
 
-function animateTextContent(
+function animateBlurTransition(
   element: gsap.TweenTarget,
   direction: "in" | "out" = "in",
   options: gsap.TweenVars = {}
@@ -30,9 +30,11 @@ function animateTextContent(
 export function useLoadAnimation({
   containerRef,
   contentRef,
+  progressIndicatorRef,
 }: {
   containerRef: React.RefObject<HTMLDivElement | null>;
   contentRef: React.RefObject<HTMLDivElement | null>;
+  progressIndicatorRef: React.RefObject<HTMLDivElement | null>;
 }) {
   const tl = useRef<GSAPTimeline>(null);
   const prefersReducedMotion = usePrefersReducedMotion();
@@ -41,6 +43,10 @@ export function useLoadAnimation({
     () => {
       const map = gsap.utils.toArray("[data-map]");
       const pins = gsap.utils.toArray("[data-pin]");
+      // Scope the data-animate selector to only the progress indicator
+      const steps = gsap.utils.selector(progressIndicatorRef.current || "")(
+        "[data-animate]"
+      );
 
       if (prefersReducedMotion) {
         // Instantly show all content without animation
@@ -59,6 +65,9 @@ export function useLoadAnimation({
         },
       });
 
+      // Set initial position of the steps to animate from
+      gsap.set(steps, { y: 10, opacity: 0 });
+
       tl.current
         .to(map, {
           opacity: 1,
@@ -74,7 +83,7 @@ export function useLoadAnimation({
           "<+0.5"
         )
         .add(
-          animateTextContent(contentRef.current?.children || [], "in"),
+          animateBlurTransition(contentRef.current?.children || [], "in"),
           "<+0.3"
         )
         .to(pins, {
@@ -82,8 +91,25 @@ export function useLoadAnimation({
           scale: 1,
           duration: 0.6,
           stagger: 0.1,
-          ease: "power3.out",
-        });
+        })
+        .to(
+          progressIndicatorRef.current,
+          {
+            opacity: 1,
+            duration: 1,
+          },
+          "<+0.3"
+        )
+        .to(
+          steps,
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.6,
+            stagger: 0.05,
+          },
+          "<"
+        );
     },
     { scope: containerRef, dependencies: [prefersReducedMotion] }
   );
@@ -97,12 +123,14 @@ export function useZoomAnimation({
   pinContentRef,
   activePin,
   containerRef,
+  progressIndicatorRef,
 }: {
   mapContainerRef: React.RefObject<HTMLDivElement | null>;
   contentRef: React.RefObject<HTMLDivElement | null>;
   pinContentRef: React.RefObject<HTMLDivElement | null>;
   activePin: PinData | null;
   containerRef: React.RefObject<HTMLDivElement | null>;
+  progressIndicatorRef: React.RefObject<HTMLDivElement | null>;
 }) {
   const tl = useRef<GSAPTimeline | null>(null);
 
@@ -139,12 +167,21 @@ export function useZoomAnimation({
           },
           "<"
         )
-        .add(
-          animateTextContent(contentRef.current?.children || [], "out"),
-          "<+0.3"
+        .to(
+          progressIndicatorRef.current,
+          {
+            y: 100,
+            opacity: 0,
+            duration: 0.6,
+          },
+          "<"
         )
         .add(
-          animateTextContent(pinContentRef.current?.children || [], "in"),
+          animateBlurTransition(contentRef.current?.children || [], "out"),
+          "<"
+        )
+        .add(
+          animateBlurTransition(pinContentRef.current?.children || [], "in"),
           ">-0.1"
         );
 

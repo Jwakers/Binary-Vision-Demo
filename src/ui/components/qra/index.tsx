@@ -1,10 +1,11 @@
 "use client";
 
+import { QRA_STEPS, QRAStep } from "@/constants";
 import { cn } from "@/lib/utils";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { Fragment, useRef, useState } from "react";
 import signalTowerImage from "../../../../public/signal-tower.png";
 import { useLoadAnimation, useZoomAnimation } from "./animation";
 import { Button } from "./button";
@@ -14,21 +15,25 @@ import UKMap from "./uk-map";
 // -- Next steps --
 // Add the progress indicator at the bottom (sticky)
 
+const initialAnimationClasses = "opacity-0 origin-left scale-110 blur-sm";
+
 export default function QRA() {
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const pinContentRef = useRef<HTMLDivElement>(null);
-  const initialAnimationClasses = "opacity-0 origin-left scale-110 blur-sm";
+  const progressIndicatorRef = useRef<HTMLDivElement>(null);
   const [activePin, setActivePin] = useState<PinData | null>(null);
+  const [activeStep, setActiveStep] = useState<QRAStep | null>(null);
 
-  useLoadAnimation({ containerRef, contentRef });
+  useLoadAnimation({ containerRef, contentRef, progressIndicatorRef });
   const zoomTl = useZoomAnimation({
     mapContainerRef,
     contentRef,
     pinContentRef,
     activePin,
     containerRef,
+    progressIndicatorRef,
   });
 
   const handlePinClick = (pin: PinData) => {
@@ -43,6 +48,10 @@ export default function QRA() {
       // Reset active pin after animation completes
       setActivePin(null);
     });
+  };
+
+  const handleStepClick = (step: QRAStep) => {
+    setActiveStep(step);
   };
 
   return (
@@ -103,7 +112,10 @@ export default function QRA() {
             <p className={cn("text-3xl", initialAnimationClasses)}>
               A rogue aircraft approaches UK airspace.
             </p>
-            <Button className={cn("mt-8", initialAnimationClasses)}>
+            <Button
+              className={cn("mt-8", initialAnimationClasses)}
+              onClick={() => handleStepClick("COORDINATE_RESPONSE")}
+            >
               <span>Co-ordinate response</span>
             </Button>
           </div>
@@ -164,33 +176,41 @@ export default function QRA() {
             </div>
           )}
         </div>
-        <div className="col-span-2">
-          <ProgressIndicator />
+        <div
+          className={cn(
+            "col-span-2 flex justify-center",
+            "opacity-0" // initial animation class
+          )}
+          ref={progressIndicatorRef}
+        >
+          <ProgressIndicator activeStep={activeStep} />
         </div>
       </div>
     </div>
   );
 }
 
-function ProgressIndicator() {
+function ProgressIndicator({ activeStep }: { activeStep: QRAStep | null }) {
+  const steps = Object.entries(QRA_STEPS);
+
   return (
-    <div className="bg-background text-foreground sticky bottom-15.5 rounded-[20px] px-8 py-5">
-      <ol className="flex w-auto items-center justify-center gap-12.5 font-bold">
-        <li>
-          <span>Co-ordinate response</span>
-        </li>
-        <ArrowRight />
-        <li>
-          <span>Scramble</span>
-        </li>
-        <ArrowRight />
-        <li>
-          <span>Intercept</span>
-        </li>
-        <ArrowRight />
-        <li>
-          <span>Return to base</span>
-        </li>
+    <div className="bg-background text-foreground sticky bottom-15.5 inline-flex justify-center rounded-[20px] px-8 py-5 shadow-xl">
+      <ol className="flex w-auto gap-12.5 font-bold">
+        {steps.map(([step, label], index) => (
+          <Fragment key={step}>
+            <li className="relative" data-animate>
+              <span>{label}</span>
+              <div
+                aria-hidden
+                className={cn(
+                  "bg-accent absolute inset-x-0 bottom-0 h-0.5 origin-left scale-x-0 transition-transform duration-700",
+                  activeStep === step && "scale-x-100"
+                )}
+              />
+            </li>
+            {index < steps.length - 1 && <ArrowRight data-animate />}
+          </Fragment>
+        ))}
       </ol>
     </div>
   );
