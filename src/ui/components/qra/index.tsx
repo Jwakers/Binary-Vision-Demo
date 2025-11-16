@@ -158,7 +158,7 @@ export default function QRA() {
             >
               <ContentSection
                 title="Co-ordinate response"
-                description="RAF Boulmer identifies the rouge aircraft."
+                description="RAF Boulmer identifies the rogue aircraft."
                 cta="Assess situation"
                 onClick={() => setShowOverlay(true)}
               />
@@ -232,7 +232,9 @@ export default function QRA() {
           </div>
         </div>
 
-        {showOverlay ? <Overlay /> : null}
+        {showOverlay ? (
+          <Overlay onClick={() => setActiveStep("SCRAMBLE")} />
+        ) : null}
 
         <div
           className={cn(
@@ -276,25 +278,15 @@ function ContentSection({
           alt={imageAlt || ""}
           className={cn("size-[64px]", initialAnimationClasses)}
           unoptimized
-          aria-hidden="true"
         />
       )}
       {/* Decided not to go with the design system typography for this demo. 
               I have increased from the designs 33px to 48px to create better hierarchy. */}
-      <h2
-        className={cn("text-5xl font-bold", initialAnimationClasses)}
-        aria-hidden="true"
-      >
+      <h2 className={cn("text-5xl font-bold", initialAnimationClasses)}>
         {title}
       </h2>
-      <p className={cn("text-3xl", initialAnimationClasses)} aria-hidden="true">
-        {description}
-      </p>
-      <Button
-        className={cn("mt-8", initialAnimationClasses)}
-        onClick={onClick}
-        aria-hidden="true"
-      >
+      <p className={cn("text-3xl", initialAnimationClasses)}>{description}</p>
+      <Button className={cn("mt-8", initialAnimationClasses)} onClick={onClick}>
         {cta}
       </Button>
     </>

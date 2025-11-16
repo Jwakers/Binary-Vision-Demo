@@ -1,11 +1,11 @@
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useEffect, useRef } from "react";
-import missionControlImage from "~/public/mission-control.jpg";
+import rafJetImage from "~/public/raf-jet.jpg";
 import { useOverlayAnimation } from "./animation";
 import { Button } from "./button";
 
-export function Overlay() {
+export function Overlay({ onClick }: { onClick: () => void }) {
   const overlayRef = useRef<HTMLDivElement>(null);
   const overlayTl = useOverlayAnimation({ overlayRef });
 
@@ -26,7 +26,7 @@ export function Overlay() {
       >
         <div className="relative size-full">
           <Image
-            src={missionControlImage}
+            src={rafJetImage}
             alt="Mission Control"
             className="size-full object-cover"
             fill
@@ -55,7 +55,7 @@ export function Overlay() {
               sint occaecat cupidatat non proident sunt in culpa qui officia.
             </li>
           </ul>
-          <Button className="mt-10" data-animate>
+          <Button className="mt-10" data-animate onClick={onClick}>
             Scramble Jets
           </Button>
         </div>
