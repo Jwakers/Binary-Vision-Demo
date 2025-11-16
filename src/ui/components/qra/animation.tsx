@@ -59,16 +59,14 @@ export function useAnimatePathTransition({
     // This is only for demonstration purposes.
     const [pin1, pin2] = pinData;
 
-    // Convert percentages to actual coordinates
     const offset = 6; // Offset to account for the pin size
     const x1 = (pin1.x / 100) * width + offset;
     const y1 = (pin1.y / 100) * height + offset;
     const x2 = (pin2.x / 100) * width + offset;
     const y2 = (pin2.y / 100) * height + offset;
 
-    // Calculate control point for curve (midpoint with offset)
     const controlX = (x1 + x2) / 2;
-    const controlY = Math.min(y1, y2) - Math.abs(x2 - x1) * 0.2; // Curve upward
+    const controlY = Math.min(y1, y2) - Math.abs(x2 - x1) * 0.2;
 
     // Update path
     path.setAttribute(
@@ -78,12 +76,11 @@ export function useAnimatePathTransition({
 
     const length = path.getTotalLength();
 
-    gsap.set(path, {
-      strokeDasharray: length,
-      strokeDashoffset: length,
-    });
-
     tl.current
+      .set(path, {
+        strokeDasharray: length,
+        strokeDashoffset: length,
+      })
       .set(svg, {
         opacity: 1,
       })

@@ -6,6 +6,7 @@ import { ArrowLeft } from "lucide-react";
 import Image, { StaticImageData } from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import rafJetImage from "~/public/raf-jet.jpg";
 import signalTowerImage from "../../../../public/signal-tower.png";
 import {
   useAnimatePathTransition,
@@ -19,15 +20,12 @@ import ProgressIndicator from "./progress-indicator";
 import UKMap from "./uk-map";
 
 // -- Next steps --
-// Handle co-ordinate response step click
-// - Draw a line between the two bases
-// - Add a third content section for co-ordinating response and animate in
-// Handle asses situation button click
-// -- New 5050 content overlay
+// Handle scramble jets button click
 
 // Enhancements
 // Add the aircraft flying toward the map
 // As part of the path animation, zoom the map to the two pins
+// Add overlay back button
 
 const initialAnimationClasses = "opacity-0 origin-left scale-110 blur-sm";
 
@@ -38,7 +36,6 @@ export default function QRA() {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const pinContentRef = useRef<HTMLDivElement>(null);
   const progressIndicatorRef = useRef<HTMLDivElement>(null);
-  const overlayRef = useRef<HTMLDivElement>(null);
   const pathRef = useRef<SVGPathElement>(null);
   const [activePin, setActivePin] = useState<PinData | null>(null);
   const [activeStep, setActiveStep] = useState<QRAStep | null>(null);
@@ -233,7 +230,7 @@ export default function QRA() {
         </div>
 
         {showOverlay ? (
-          <Overlay onClick={() => setActiveStep("SCRAMBLE")} />
+          <ScrambleJetsOverlay onClick={() => setActiveStep("SCRAMBLE")} />
         ) : null}
 
         <div
@@ -247,6 +244,50 @@ export default function QRA() {
         </div>
       </div>
     </>
+  );
+}
+
+function ScrambleJetsOverlay({ onClick }: { onClick: () => void }) {
+  return (
+    <Overlay>
+      <div className="grid size-full grid-cols-2 gap-16">
+        <div className="relative size-full">
+          <Image
+            src={rafJetImage}
+            alt="Mission Control"
+            className="size-full object-cover"
+            fill
+          />
+        </div>
+        <div className="flex max-w-xl flex-col justify-center space-y-6">
+          <h2 className="text-5xl font-bold" data-animate>
+            RAF High Wycombe
+          </h2>
+          <ul className="space-y-4 text-2xl">
+            <li data-animate>
+              <span className="font-semibold">NASOC Controller:</span> Lorem
+              ipsum dolor sit amet, consectetur adipisicing elit sed do eiusmod
+              tempor.
+            </li>
+            <li data-animate>
+              <span className="font-semibold">CRC Controller:</span> Ut enim ad
+              minim veniam quis nostrud exercitation ullamco laboris nisi.
+            </li>
+            <li data-animate>
+              <span className="font-semibold">NASOC Controller:</span> Duis aute
+              irure dolor in reprehenderit voluptate velit esse cillum dolore.
+            </li>
+            <li data-animate>
+              <span className="font-semibold">CRC Controller:</span> Excepteur
+              sint occaecat cupidatat non proident sunt in culpa qui officia.
+            </li>
+          </ul>
+          <Button className="mt-10" data-animate onClick={onClick}>
+            Scramble Jets
+          </Button>
+        </div>
+      </div>
+    </Overlay>
   );
 }
 
