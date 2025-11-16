@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState } from "react";
@@ -46,7 +46,7 @@ export default function QRA() {
   };
 
   return (
-    <div className="mx-auto pt-20 h-dvh min-h-[1080px] overflow-hidden">
+    <div className="mx-auto h-dvh min-h-[1080px] overflow-hidden pt-20">
       <div
         ref={containerRef}
         className="container mx-auto grid grid-cols-[auto_1fr]"
@@ -57,7 +57,7 @@ export default function QRA() {
           <UKMap
             className={cn(
               "fill-[hsl(210_8.82%_26.67%)]",
-              "opacity-0 scale-110" // initial animation class
+              "scale-110 opacity-0" // initial animation class
             )}
             data-map
           />
@@ -65,8 +65,8 @@ export default function QRA() {
             <button
               key={pin.id}
               className={cn(
-                "absolute cursor-pointer size-4 bg-accent rounded-full",
-                "opacity-0 scale-200" // initial animation class
+                "bg-accent absolute size-4 cursor-pointer rounded-full",
+                "scale-200 opacity-0" // initial animation class
               )}
               data-pin
               aria-label={pin.name}
@@ -77,7 +77,7 @@ export default function QRA() {
               <span className="sr-only">{pin.name}</span>
               <div
                 aria-hidden="true"
-                className="absolute inset-0 bg-accent/60 rounded-full animate-ping"
+                className="bg-accent/60 absolute inset-0 animate-ping rounded-full"
               />
             </button>
           ))}
@@ -115,13 +115,13 @@ export default function QRA() {
           {activePin && (
             <div
               key={activePin.id}
-              className="space-y-4 col-1 row-1"
+              className="col-1 row-1 space-y-4"
               ref={pinContentRef}
             >
               <button
                 type="button"
                 className={cn(
-                  "underline flex gap-1 items-center text-sm cursor-pointer",
+                  "flex cursor-pointer items-center gap-1 text-sm underline",
                   initialAnimationClasses
                 )}
                 onClick={handleBackClick}
@@ -139,7 +139,7 @@ export default function QRA() {
               <Link
                 href={activePin.content.cta.href}
                 className={cn(
-                  "inline-block underline text-sm",
+                  "inline-block text-sm underline",
                   initialAnimationClasses
                 )}
               >
@@ -157,14 +157,41 @@ export default function QRA() {
                     title={`${activePin.content.title} video`}
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
-                    className="w-full h-full rounded-lg"
+                    className="h-full w-full rounded-lg"
                   />
                 </div>
               )}
             </div>
           )}
         </div>
+        <div className="col-span-2">
+          <ProgressIndicator />
+        </div>
       </div>
+    </div>
+  );
+}
+
+function ProgressIndicator() {
+  return (
+    <div className="bg-background text-foreground sticky bottom-15.5 rounded-[20px] px-8 py-5">
+      <ol className="flex w-auto items-center justify-center gap-12.5 font-bold">
+        <li>
+          <span>Co-ordinate response</span>
+        </li>
+        <ArrowRight />
+        <li>
+          <span>Scramble</span>
+        </li>
+        <ArrowRight />
+        <li>
+          <span>Intercept</span>
+        </li>
+        <ArrowRight />
+        <li>
+          <span>Return to base</span>
+        </li>
+      </ol>
     </div>
   );
 }

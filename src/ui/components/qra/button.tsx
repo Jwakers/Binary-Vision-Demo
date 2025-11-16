@@ -10,7 +10,7 @@ export function Button({ children, ...props }: ButtonProps) {
     <button
       {...props}
       className={cn(
-        "relative cursor-pointer rounded-full font-extrabold transition-colors bg-accent text-accent-foreground text-3xl px-7 py-3 shadow uppercase",
+        "bg-accent text-accent-foreground relative cursor-pointer rounded-full px-7 py-3 text-3xl font-extrabold uppercase shadow transition-colors",
         "hover:bg-accent/90",
         props.className
       )}

@@ -7,23 +7,23 @@ import Link from "next/link";
 
 export default function Header() {
   return (
-    <header className="w-full border-primary border-t-[5px] absolute top-0 inset-x-0 z-50">
-      <div className=" flex gap-2 justify-between items-center mx-auto px-7.5">
+    <header className="border-primary absolute inset-x-0 top-0 z-50 w-full border-t-[5px]">
+      <div className="mx-auto flex items-center justify-between gap-2 px-7.5">
         <div className="flex items-start">
           <Link href={ROUTES.HOME}>
-            <div className="px-5 h-[74px] bg-primary rounded-br-lg rounded-bl-lg flex items-center">
-              <Logo className="w-25 h-auto" />
+            <div className="bg-primary flex h-[74px] items-center rounded-br-lg rounded-bl-lg px-5">
+              <Logo className="h-auto w-25" />
             </div>
           </Link>
           <Link
             href={ROUTES.CADETS}
-            className="bg-background/30 text-tertiary-foreground px-5 py-2.5 rounded-br-lg hover:scale-105 transition-transform duration-300 origin-top-left"
+            className="bg-background/30 text-tertiary-foreground origin-top-left rounded-br-lg px-5 py-2.5 transition-transform duration-300 hover:scale-105"
           >
             Cadets
           </Link>
         </div>
 
-        <div className="py-4 text-background">
+        <div className="text-background py-4">
           <nav className="text-sm font-semibold">
             <ul className="flex items-center gap-12.5">
               {NAV_ITEMS.map((item) => (
@@ -73,7 +73,7 @@ function UnderlinedLink({
       {children}
       <div
         aria-hidden
-        className="w-0 group-hover:w-full h-[2px] bg-accent transition-all duration-300"
+        className="bg-accent h-[2px] w-0 transition-all duration-300 group-hover:w-full"
       />
     </Link>
   );

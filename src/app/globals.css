@@ -23,7 +23,7 @@ CSS function, like hsl(), inside of CSS variables. */
   --muted-foreground: 0, 0%, 100%;
   --map: 0, 0%, 33%;
   --map-foreground: 0 0 100%;
-};
+}
 
 /* I will leave out any typography design system for now as it seems unnecessary for the demo
 but if this were a 'real' project they would all go in this file too */
