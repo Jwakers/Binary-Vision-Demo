@@ -13,7 +13,12 @@ import { PIN_DATA, PinData } from "./data";
 import UKMap from "./uk-map";
 
 // -- Next steps --
-// Add the progress indicator at the bottom (sticky)
+// Handle co-ordinate response step click
+// - Add a third base close to the lossiemouth base
+// - Draw a line between the two bases
+// - Add a third content section for co-ordinating response and animate in
+// Handle asses situation button click
+// -- New 5050 content overlay
 
 const initialAnimationClasses = "opacity-0 origin-left scale-110 blur-sm";
 
