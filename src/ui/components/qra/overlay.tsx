@@ -2,9 +2,15 @@ import { cn } from "@/lib/utils";
 import { useEffect, useRef, type ReactNode } from "react";
 import { useOverlayAnimation } from "./animation";
 
-export function Overlay({ children }: { children: ReactNode }) {
+export function Overlay({
+  children,
+  containerRef,
+}: {
+  children: ReactNode;
+  containerRef: React.RefObject<HTMLDivElement | null>;
+}) {
   const overlayRef = useRef<HTMLDivElement>(null);
-  const overlayTl = useOverlayAnimation({ overlayRef });
+  const overlayTl = useOverlayAnimation({ overlayRef, containerRef });
 
   useEffect(() => {
     if (!overlayTl.current) return;

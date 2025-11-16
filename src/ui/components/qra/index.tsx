@@ -91,9 +91,9 @@ export default function QRA() {
       >
         <div
           ref={containerRef}
-          className="container mx-auto grid grid-cols-[auto_1fr]"
+          className="container mx-auto grid h-full grid-cols-[auto_1fr]"
         >
-          <div ref={mapContainerRef} className="relative">
+          <div ref={mapContainerRef} className="relative self-center">
             {/* Got this colour from the map using a color picker.
           Does not seem to be part of the design system so I am inlining it here. */}
             <UKMap
@@ -207,7 +207,7 @@ export default function QRA() {
                 >
                   {activePin.content.cta.label}
                 </Link>
-                {activePin.content.youtubeVideoId && (
+                {activePin.content.youtubeVideoId ? (
                   <div
                     aria-hidden="true"
                     className={cn(
@@ -223,14 +223,21 @@ export default function QRA() {
                       className="h-full w-full rounded-lg"
                     />
                   </div>
-                )}
+                ) : null}
               </div>
             )}
           </div>
         </div>
 
         {showOverlay ? (
-          <ScrambleJetsOverlay onClick={() => setActiveStep("SCRAMBLE")} />
+          <BaseOverlay
+            onClick={() => setActiveStep("SCRAMBLE")}
+            containerRef={containerRef}
+          />
+        ) : null}
+
+        {activeStep === "SCRAMBLE" ? (
+          <ScrambleOverlay containerRef={containerRef} />
         ) : null}
 
         <div
@@ -247,9 +254,15 @@ export default function QRA() {
   );
 }
 
-function ScrambleJetsOverlay({ onClick }: { onClick: () => void }) {
+function BaseOverlay({
+  onClick,
+  containerRef,
+}: {
+  onClick: () => void;
+  containerRef: React.RefObject<HTMLDivElement | null>;
+}) {
   return (
-    <Overlay>
+    <Overlay containerRef={containerRef}>
       <div className="grid size-full grid-cols-2 gap-16">
         <div className="relative size-full">
           <Image
@@ -287,6 +300,18 @@ function ScrambleJetsOverlay({ onClick }: { onClick: () => void }) {
           </Button>
         </div>
       </div>
+    </Overlay>
+  );
+}
+
+function ScrambleOverlay({
+  containerRef,
+}: {
+  containerRef: React.RefObject<HTMLDivElement | null>;
+}) {
+  return (
+    <Overlay containerRef={containerRef}>
+      [Placeholder content for scramble overlay]
     </Overlay>
   );
 }

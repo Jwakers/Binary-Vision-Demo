@@ -48,7 +48,14 @@ export function useAnimatePathTransition({
 
     if (!path || !container) return;
 
-    tl.current = gsap.timeline({ paused: true });
+    tl.current = gsap.timeline({
+      paused: true,
+      onStart: () => {
+        if (contentRef.current) contentRef.current.inert = true;
+        if (secondaryContentRef.current)
+          secondaryContentRef.current.inert = false;
+      },
+    });
 
     const svg = path.parentElement;
 
@@ -99,12 +106,7 @@ export function useAnimatePathTransition({
           "in"
         ),
         "<+0.3"
-      )
-      .call(() => {
-        if (contentRef.current) contentRef.current.inert = true;
-        if (secondaryContentRef.current)
-          secondaryContentRef.current.inert = false;
-      });
+      );
   }, []);
 
   return tl;
@@ -221,6 +223,14 @@ export function useZoomAnimation({
     tl.current = gsap.timeline({
       paused: true,
       defaults: { ease: "power2.inOut" },
+      onStart: () => {
+        if (contentRef.current) contentRef.current.inert = true;
+        if (pinContentRef.current) pinContentRef.current.inert = false;
+      },
+      onReverseComplete: () => {
+        if (contentRef.current) contentRef.current.inert = false;
+        if (pinContentRef.current) pinContentRef.current.inert = true;
+      },
     });
   }, []);
 
@@ -263,16 +273,9 @@ export function useZoomAnimation({
           animateBlurTransition(contentRef.current?.children || [], "out"),
           "<"
         )
-        .call(() => {
-          const isReversed = tl.current?.reversed();
-          if (contentRef.current)
-            contentRef.current.inert = isReversed ? false : true;
-          if (pinContentRef.current)
-            pinContentRef.current.inert = isReversed ? true : false;
-        })
         .add(
           animateBlurTransition(pinContentRef.current?.children || [], "in"),
-          ">-0.1"
+          "<+0.3"
         );
     },
     { scope: containerRef, dependencies: [activePin] }
@@ -283,8 +286,10 @@ export function useZoomAnimation({
 
 export function useOverlayAnimation({
   overlayRef,
+  containerRef,
 }: {
   overlayRef: React.RefObject<HTMLDivElement | null>;
+  containerRef: React.RefObject<HTMLDivElement | null>;
 }) {
   const tl = useRef<GSAPTimeline | null>(null);
 
@@ -313,17 +318,21 @@ export function useOverlayAnimation({
         duration: 0.6,
         ease: "power2.in",
       })
+      .to(
+        containerRef.current,
+        {
+          y: -80,
+          duration: 0.8,
+        },
+        "<"
+      )
       .set(overlay, {
         opacity: 1,
       })
-      .to(
-        shutter,
-        {
-          y: "-100%",
-          duration: 0.3,
-        },
-        ">+0.3"
-      )
+      .to(shutter, {
+        y: "-100%",
+        duration: 0.3,
+      })
       .to(
         contentItems,
         {
@@ -334,6 +343,12 @@ export function useOverlayAnimation({
         },
         ">-0.1"
       );
+
+    return () => {
+      gsap.set(containerRef.current, {
+        y: 0,
+      });
+    };
   }, []);
 
   return tl;
