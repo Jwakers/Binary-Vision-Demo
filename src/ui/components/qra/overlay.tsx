@@ -1,16 +1,24 @@
 import { cn } from "@/lib/utils";
 import { useEffect, useRef, type ReactNode } from "react";
-import { useOverlayAnimation } from "./animation";
+import { useOverlayAnimation, type OverlayTransitionTypes } from "./animation";
+
+type OverlayProps = {
+  children: ReactNode;
+  containerRef: React.RefObject<HTMLDivElement | null>;
+  transitionType?: OverlayTransitionTypes;
+};
 
 export function Overlay({
   children,
   containerRef,
-}: {
-  children: ReactNode;
-  containerRef: React.RefObject<HTMLDivElement | null>;
-}) {
+  transitionType = "swipe",
+}: OverlayProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
-  const overlayTl = useOverlayAnimation({ overlayRef, containerRef });
+  const overlayTl = useOverlayAnimation({
+    overlayRef,
+    containerRef,
+    transitionType,
+  });
 
   useEffect(() => {
     if (!overlayTl.current) return;
@@ -28,11 +36,35 @@ export function Overlay({
       >
         {children}
       </div>
-      <div
-        aria-hidden
-        data-animate-shutter
-        className="bg-primary fixed bottom-0 size-full translate-y-full"
-      />
+      {transitionType === "swipe" ? (
+        <div
+          aria-hidden
+          data-animate-shutter
+          className="bg-primary fixed bottom-0 size-full translate-y-full"
+        />
+      ) : null}
+      {transitionType === "circle" ? (
+        <svg
+          className="pointer-events-none fixed inset-0 size-full"
+          aria-hidden
+          data-animate-circle
+          viewBox="0 0 100 100"
+          preserveAspectRatio="xMidYMid slice"
+        >
+          <defs>
+            <mask id="holeMask">
+              <rect width="100" height="100" fill="white" />
+              <circle id="maskHole" cx="50" cy="50" r="0" fill="black" />
+            </mask>
+          </defs>
+
+          <g mask="url(#holeMask)">
+            <circle className="fill-primary" cx="50" cy="50" r="0" />
+            <circle className="fill-background" cx="50" cy="50" r="0" />
+            <circle className="fill-accent" cx="50" cy="50" r="0" />
+          </g>
+        </svg>
+      ) : null}
     </div>
   );
 }

@@ -287,12 +287,16 @@ export function useZoomAnimation({
   return tl;
 }
 
+export type OverlayTransitionTypes = "swipe" | "circle";
+
 export function useOverlayAnimation({
   overlayRef,
   containerRef,
+  transitionType,
 }: {
   overlayRef: React.RefObject<HTMLDivElement | null>;
   containerRef: React.RefObject<HTMLDivElement | null>;
+  transitionType: OverlayTransitionTypes;
 }) {
   const tl = useRef<GSAPTimeline | null>(null);
 
@@ -306,46 +310,83 @@ export function useOverlayAnimation({
     const parent = overlayRef.current;
 
     if (!parent) return;
+    const q = gsap.utils.selector(parent || "");
+    const overlay = q("[data-animate-overlay]");
+    const contentItems = q("[data-animate]");
 
-    const overlay = gsap.utils.selector(parent || "")("[data-animate-overlay]");
-    const shutter = gsap.utils.selector(parent || "")("[data-animate-shutter]");
-    const contentItems = gsap.utils.selector(parent || "")("[data-animate]");
+    tl.current.set(contentItems, {
+      opacity: 0,
+      y: 10,
+    });
 
-    tl.current
-      .set(contentItems, {
-        opacity: 0,
-        y: 10,
-      })
-      .to(shutter, {
-        y: 0,
-        duration: 0.6,
-        ease: "power2.in",
-      })
-      .to(
-        containerRef.current,
-        {
-          y: -80,
-          duration: 0.8,
-        },
-        "<"
-      )
-      .set(overlay, {
-        opacity: 1,
-      })
-      .to(shutter, {
-        y: "-100%",
-        duration: 0.3,
-      })
-      .to(
-        contentItems,
-        {
-          opacity: 1,
+    if (transitionType === "swipe") {
+      const shutter = q("[data-animate-shutter]");
+
+      tl.current
+        .to(shutter, {
           y: 0,
+          duration: 0.6,
+          ease: "power2.in",
+        })
+        .to(
+          containerRef.current,
+          {
+            y: -80,
+            duration: 0.8,
+          },
+          "<"
+        )
+        .set(overlay, {
+          opacity: 1,
+        })
+        .to(shutter, {
+          y: "-100%",
           duration: 0.3,
-          stagger: 0.075,
-        },
-        ">-0.1"
-      );
+        })
+        .to(
+          contentItems,
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.3,
+            stagger: 0.075,
+          },
+          ">-0.1"
+        );
+    }
+
+    if (transitionType === "circle") {
+      const [wrapper] = q("[data-animate-circle]");
+      const circles = wrapper?.querySelectorAll("circle:not(#maskHole)");
+      const maskHole = q("#maskHole");
+
+      tl.current
+        .set(circles, {
+          attr: { r: 0 },
+        })
+        .to(circles, {
+          attr: { r: 100 },
+          duration: 0.6,
+          stagger: 0.2,
+          ease: "power2.inOut",
+        })
+        .set(
+          overlay,
+          {
+            opacity: 1,
+          },
+          "<+=0.6"
+        )
+        .to(
+          maskHole,
+          {
+            attr: { r: 100 },
+            duration: 0.6,
+            ease: "power2.inOut",
+          },
+          ">-=0.1"
+        );
+    }
 
     return () => {
       gsap.set(containerRef.current, {

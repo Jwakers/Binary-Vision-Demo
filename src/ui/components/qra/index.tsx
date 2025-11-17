@@ -305,7 +305,7 @@ function ScrambleOverlay({
   // Ideally the video here would be preloaded and streamed in from a CDN or video service to save bandwidth.
   // For the demo it is statically hosted for speed of development.
   return (
-    <Overlay containerRef={containerRef}>
+    <Overlay containerRef={containerRef} transitionType="circle">
       <video
         autoPlay
         loop
