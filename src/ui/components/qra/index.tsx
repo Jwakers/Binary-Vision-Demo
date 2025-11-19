@@ -22,7 +22,6 @@ import ProgressIndicator from "./progress-indicator";
 import UKMap from "./uk-map";
 
 // Enhancements
-// As part of the path animation, zoom the map to the two pins
 // Add overlay back button
 // Treat modals as portals to more easily manipulate the background content
 

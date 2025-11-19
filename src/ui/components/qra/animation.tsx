@@ -89,6 +89,7 @@ export function useAnimatePathTransition({
     });
 
     const svg = path.parentElement;
+    const pins = gsap.utils.selector(container || "")("[data-pin]");
 
     // Get SVG dimensions
     const { width, height } = container.getBoundingClientRect();
@@ -114,6 +115,38 @@ export function useAnimatePathTransition({
 
     const length = path.getTotalLength();
 
+    // Calculate zoom and center for the two pins
+    // Find the midpoint between the two pins
+    const centerX = (pin1.x + pin2.x) / 2;
+    const centerY = (pin1.y + pin2.y) / 2;
+
+    // Calculate the bounding box dimensions
+    const pinDistanceX = Math.abs(pin2.x - pin1.x);
+    const pinDistanceY = Math.abs(pin2.y - pin1.y);
+
+    // Add padding around the pins
+    const padding = 20; // 20% padding on each side
+    const boundingWidth = pinDistanceX + padding * 2;
+    const boundingHeight = pinDistanceY + padding * 2;
+
+    // Calculate the scale needed to fit the bounding box in the viewport
+    // We want the bounding box to fit within the viewport, so we scale based on
+    // which dimension (width or height) requires less scaling
+    const scaleX = 100 / boundingWidth;
+    const scaleY = 100 / boundingHeight;
+    const targetScale = Math.min(scaleX, scaleY, 3); // Cap at 3x to avoid over-zooming
+
+    // Calculate the translation needed to center the midpoint
+    // Transform origin is set to center of the two pins
+    // Then we translate to center it in the viewport
+    const translateX = 50 - centerX;
+    const translateY = 50 - centerY;
+
+    // Set transform origin to the center point between the pins
+    gsap.set(container, {
+      transformOrigin: `${centerX}% ${centerY}%`,
+    });
+
     tl.current
       .set(path, {
         strokeDasharray: length,
@@ -122,11 +155,30 @@ export function useAnimatePathTransition({
       .set(svg, {
         opacity: 1,
       })
-      .to(path, {
-        strokeDashoffset: 0,
+      .to(container, {
+        scale: targetScale,
+        x: `${translateX}%`,
+        y: `${translateY}%`,
         duration: 1.5,
         ease: "power2.inOut",
       })
+      .to(
+        pins,
+        {
+          scale: 1 / targetScale,
+          duration: 1.5,
+        },
+        "<"
+      )
+      .to(
+        path,
+        {
+          strokeDashoffset: 0,
+          duration: 1.5,
+          ease: "power2.inOut",
+        },
+        "<"
+      )
       .add(
         animateBlurTransition(contentRef.current?.children || [], "out"),
         "<"
