@@ -29,6 +29,33 @@ function animateBlurTransition(
   return tl;
 }
 
+function animateJet(jetRef: React.RefObject<HTMLDivElement | null>) {
+  const tl = gsap.timeline();
+
+  tl.set(jetRef.current, {
+    rotate: Math.atan2(-400, -window.innerWidth) * (180 / Math.PI) + 90,
+  })
+    .to(jetRef.current, {
+      x: -window.innerWidth,
+      y: -400,
+
+      duration: 60,
+      ease: "linear",
+    })
+    .to(
+      jetRef.current,
+      {
+        scale: 1,
+        opacity: 1,
+        duration: 1,
+        ease: "power2.inOut",
+      },
+      "<"
+    );
+
+  return tl;
+}
+
 export function useAnimatePathTransition({
   pathRef,
   mapContainerRef,
@@ -118,10 +145,12 @@ export function useLoadAnimation({
   containerRef,
   contentRef,
   progressIndicatorRef,
+  jetRef,
 }: {
   containerRef: React.RefObject<HTMLDivElement | null>;
   contentRef: React.RefObject<HTMLDivElement | null>;
   progressIndicatorRef: React.RefObject<HTMLDivElement | null>;
+  jetRef: React.RefObject<HTMLDivElement | null>;
 }) {
   const tl = useRef<GSAPTimeline | null>(null);
   const prefersReducedMotion = usePrefersReducedMotion();
@@ -175,12 +204,17 @@ export function useLoadAnimation({
           animateBlurTransition(contentRef.current?.children || [], "in"),
           "<+0.3"
         )
-        .to(pins, {
-          opacity: 1,
-          scale: 1,
-          duration: 0.6,
-          stagger: 0.1,
-        })
+        .add(animateJet(jetRef), "<+0.3")
+        .to(
+          pins,
+          {
+            opacity: 1,
+            scale: 1,
+            duration: 0.6,
+            stagger: 0.1,
+          },
+          "<"
+        )
         .to(
           progressIndicatorRef.current,
           {

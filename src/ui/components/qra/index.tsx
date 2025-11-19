@@ -16,12 +16,12 @@ import {
 } from "./animation";
 import { Button } from "./button";
 import { PIN_DATA, PinData } from "./data";
+import Jet from "./jet";
 import { Overlay } from "./overlay";
 import ProgressIndicator from "./progress-indicator";
 import UKMap from "./uk-map";
 
 // Enhancements
-// Add the aircraft flying toward the map
 // As part of the path animation, zoom the map to the two pins
 // Add overlay back button
 // Treat modals as portals to more easily manipulate the background content
@@ -36,11 +36,12 @@ export default function QRA() {
   const pinContentRef = useRef<HTMLDivElement>(null);
   const progressIndicatorRef = useRef<HTMLDivElement>(null);
   const pathRef = useRef<SVGPathElement>(null);
+  const jetRef = useRef<HTMLDivElement>(null);
   const [activePin, setActivePin] = useState<PinData | null>(null);
   const [activeStep, setActiveStep] = useState<QRAStep | null>(null);
   const [showOverlay, setShowOverlay] = useState(false);
 
-  useLoadAnimation({ containerRef, contentRef, progressIndicatorRef });
+  useLoadAnimation({ containerRef, contentRef, progressIndicatorRef, jetRef });
   const zoomTl = useZoomAnimation({
     mapContainerRef,
     contentRef,
@@ -131,6 +132,16 @@ export default function QRA() {
                 disabled={!!activePin || !!activeStep}
               />
             ))}
+            <div
+              ref={jetRef}
+              className="absolute top-[40%] left-[140%] size-6 -translate-x-1/2 -translate-y-1/2 scale-2 opacity-0"
+            >
+              <Jet className="drop-shadow-map-foreground/10 size-full text-[hsl(210_8.82%_26.67%)] drop-shadow" />
+              <div
+                aria-hidden
+                className="border-accent absolute inset-0 animate-ping rounded-full border-2"
+              />
+            </div>
           </div>
           {/* Right Side content section */}
           <div className="isolate grid grid-cols-1 grid-rows-1 items-center">
