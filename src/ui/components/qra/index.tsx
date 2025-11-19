@@ -23,7 +23,6 @@ import UKMap from "./uk-map";
 
 // Enhancements
 // Add overlay back button
-// Treat modals as portals to more easily manipulate the background content
 
 const initialAnimationClasses = "opacity-0 origin-left scale-110 blur-sm";
 
